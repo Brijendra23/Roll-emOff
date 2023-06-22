@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,21 +12,26 @@ public class PlayerController : MonoBehaviour
     private float powerupStrength = 10f;
     private float powerupTimer = 7.0f;
     public GameObject powerupIndicator;
+    [SerializeField] private PhotonView view = null;
     
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("FocalPoint");
+        view=GetComponent<PhotonView>();
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        float forwardInput = Input.GetAxis("Vertical");
-        playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
-        powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f,0);
+        if (view.IsMine)//authority over the spawned player
+        {
+            float forwardInput = Input.GetAxis("Vertical");
+            playerRb.AddForce(focalPoint.transform.forward * forwardInput * speed);
+            powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
